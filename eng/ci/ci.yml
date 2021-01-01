@@ -1,0 +1,30 @@
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema#triggers
+trigger:
+  branches:  
+    include:
+    - master
+    - feature/*
+    - sprint/*
+    - release/*
+
+  paths:
+    include:
+    - 'src/*'
+    - 'eng/*'
+    - 'tests/*'
+
+resources:
+  repositories:
+    - repository: pipelineTemplates
+      name: Evo/PipelineTemplates
+      type: git
+      ref: refs/tags/v0.1.39
+      trigger: none
+
+stages:
+- template: '/ci/stages.yml@pipelineTemplates'
+  parameters:
+    solutionFileName: Evo.Keccak.sln
+    # externalNugetFeed: ''
+    externalNugetFeed: 'NugetDotOrg-Evo'
+    
