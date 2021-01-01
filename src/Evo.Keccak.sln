@@ -3,11 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evo.Keccak", "Evo.Keccak\Evo.Keccak.csproj", "{A58D9367-D99C-4671-A517-018B9E55ADD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evo.Keccak", "Evo.Keccak\Evo.Keccak.csproj", "{A58D9367-D99C-4671-A517-018B9E55ADD7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7E360778-D0B3-4A91-9D9E-85E3123C105C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evo.Keccak.Tests", "Evo.Keccak.Tests\Evo.Keccak.Tests.csproj", "{2D42E7FF-5E0C-446A-AD28-0E907B791642}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Eng", "Eng", "{B265B0DC-0001-4D98-9F29-5C97EAB4BDC8}"
 EndProject
@@ -21,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Targets", "Targets", "{33F1
 		..\eng\targets\packaged.targets = ..\eng\targets\packaged.targets
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evo.Keccak.Tests", "..\tests\Evo.Keccak.Tests\Evo.Keccak.Tests.csproj", "{6A26ED8F-992D-4A82-8BF2-0BEB5E363B00}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,17 +31,17 @@ Global
 		{A58D9367-D99C-4671-A517-018B9E55ADD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A58D9367-D99C-4671-A517-018B9E55ADD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A58D9367-D99C-4671-A517-018B9E55ADD7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D42E7FF-5E0C-446A-AD28-0E907B791642}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D42E7FF-5E0C-446A-AD28-0E907B791642}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D42E7FF-5E0C-446A-AD28-0E907B791642}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D42E7FF-5E0C-446A-AD28-0E907B791642}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A26ED8F-992D-4A82-8BF2-0BEB5E363B00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A26ED8F-992D-4A82-8BF2-0BEB5E363B00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A26ED8F-992D-4A82-8BF2-0BEB5E363B00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A26ED8F-992D-4A82-8BF2-0BEB5E363B00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{2D42E7FF-5E0C-446A-AD28-0E907B791642} = {7E360778-D0B3-4A91-9D9E-85E3123C105C}
 		{33F174CE-88A1-4B89-B3EA-9E5A6919A4F5} = {B265B0DC-0001-4D98-9F29-5C97EAB4BDC8}
+		{6A26ED8F-992D-4A82-8BF2-0BEB5E363B00} = {7E360778-D0B3-4A91-9D9E-85E3123C105C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D91BCFE5-5953-4B6D-A8DF-DDF806C687A4}
