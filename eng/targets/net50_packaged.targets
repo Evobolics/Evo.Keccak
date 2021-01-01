@@ -1,0 +1,4 @@
+<Project>
+  <Import Project="net50.targets"/>
+  <Import Project="packaged.targets"/>
+</Project>

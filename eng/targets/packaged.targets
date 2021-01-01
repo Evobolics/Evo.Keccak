@@ -1,0 +1,16 @@
+<Project>
+	<PropertyGroup>
+    <!-- Declare variable to be filled in by the build script.  The idea is that th Build.BuildNumber will loose the first part of the year
+         and be left with the six digit build date, period, and number.  YYMMDD.NUMBER-->
+    <EvoBuildNumber>20201201.10</EvoBuildNumber>
+    <MajorVersion>$(EvoBuildNumber.Substring(2, 2))</MajorVersion>
+    <MinorVersion>0</MinorVersion>
+    <EvoVersionSuffix>$(EvoBuildNumber.Substring(4, $([MSBuild]::Subtract($(EvoBuildNumber.Length), 4))))</EvoVersionSuffix>
+    <VersionPrefix>$(MajorVersion).$(MinorVersion).$(EvoVersionSuffix)</VersionPrefix>
+    <AssemblyVersion>$(MajorVersion).$(MinorVersion).$(EvoVersionSuffix)</AssemblyVersion>
+    <IsPackable>true</IsPackable>
+    <!-- https://docs.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu5105 -->
+    <NoWarn>NU5105</NoWarn>
+	</PropertyGroup>
+  
+</Project>

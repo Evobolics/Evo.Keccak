@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <RootNamespace>Evo</RootNamespace>
+    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
+    <IsPackable>false</IsPackable>
+    <!--
+    https://github.com/dotnet/websdk/blob/4a4ae15f4c78cb3dfeffdf05ca12094b7e8a72a7/src/ProjectSystem/Targets/Microsoft.NET.Sdk.Web.ProjectSystem.props#L22
+    -->
+    <WarnOnPackingNonPackableProject>false</WarnOnPackingNonPackableProject>
+  </PropertyGroup>
+</Project>

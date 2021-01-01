@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../eng/targets/net50_packaged.targets" />
+  <PropertyGroup>
+    <Authors>Evobolics</Authors>
+    <Company>Evobolics Digital, LLC</Company>
+    <Description>A implementation of an Kecck-f[1600] algorithm for .NET 5.0</Description>
+    <Copyright>Copyright (c) 2020</Copyright>
+    <PackageProjectUrl>https://github.com/Evobolics/Evo.Keccak</PackageProjectUrl>
+    <PackageTags>Keccak Crypto Ethereum Evobolics Kecck-f 1600 Blockchain</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/Evobolics/Evo.Keccak</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReleaseNotes>The package's code was written by Evobolics Digital, LLC, which was orginally forked from the Meadow under the MIT license.  Additional notes about the algorithms implementation is located with the source files.</PackageReleaseNotes>
+  </PropertyGroup>
+</Project>
