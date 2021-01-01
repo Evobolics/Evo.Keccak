@@ -25,6 +25,6 @@ stages:
 - template: '/ci/stages.yml@pipelineTemplates'
   parameters:
     solutionFileName: Evo.Keccak.sln
-    # externalNugetFeed: ''
-    externalNugetFeed: 'NugetDotOrg-Evo'
+    externalNugetFeed: ''
+    # externalNugetFeed: 'NugetDotOrg-Evo'
     
