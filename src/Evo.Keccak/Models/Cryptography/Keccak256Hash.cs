@@ -75,17 +75,24 @@ namespace Evo.Models.Cryptography
         //     a[x][y][z] = s[w(5y + x) + z]
         //
 
-        
+
 
         #region Fields
-        
 
-        private int _roundSize;
-        private int _roundSizeU64;
-        private Memory<byte> _remainderBuffer;
-        private int _remainderLength;
-        private Memory<ulong> _state;
-        private byte[] _hash;
+
+        public int RoundSize;
+        public int RoundSizeU64;
+        public Memory<byte> RemainderBuffer;
+        public int RemainderLength;
+        public Memory<ulong> State;
+        internal byte[] _hash;
+        #endregion
+
+        #region Constructor
+        public Keccak256Hash()
+        {
+
+        }
         #endregion
 
         #region Properties
@@ -100,7 +107,7 @@ namespace Evo.Models.Cryptography
         /// <summary>
         /// Indicates the hash size in bytes.
         /// </summary>
-        public int HashSize { get; }
+        public int HashSize { get; set; }
 
         /// <summary>
         /// The current hash buffer at this point. Recomputed after hash updates.
@@ -110,7 +117,7 @@ namespace Evo.Models.Cryptography
             get
             {
                 // If the hash is null, recalculate.
-                _hash = _hash ?? UpdateFinal();
+                _hash = _hash ?? KeccakRoot.Keccak256.UpdateFinal(this);
 
                 // Return it.
                 return _hash;
@@ -118,171 +125,9 @@ namespace Evo.Models.Cryptography
         }
         #endregion
 
-        #region Constructor
-        public Keccak256Hash(int size)
-        {
-            // Set the hash size
-            HashSize = size;
-
-            // Verify the size
-            if (HashSize <= 0 || HashSize > Keccak256Service.State_Size_B_InBytes)
-            {
-                throw new ArgumentException($"Invalid Keccak hash size. Must be between 0 and {Keccak256Service.State_Size_B_InBytes}.");
-            }
-
-            // The round size.
-            _roundSize = Keccak256Service.State_Size_B_InBytes == HashSize ? Keccak256Service.HASH_DATA_AREA : Keccak256Service.State_Size_B_InBytes - 2 * HashSize;
-
-            // The size of a round in terms of ulong.
-            _roundSizeU64 = _roundSize / 8;
-
-            // Allocate our remainder buffer
-            _remainderBuffer = new byte[_roundSize];
-            _remainderLength = 0;
-        }
-        #endregion
-
-        #region Functions
-
        
 
-        public void Update(byte[] array, int index, int size)
-        {
-            // Bounds checking.
-            if (size < 0)
-            {
-                throw new ArgumentException("Cannot updated Keccak hash because the provided size of data to hash is negative.");
-            }
-            else if (index + size > array.Length || index < 0)
-            {
-                throw new ArgumentOutOfRangeException("Cannot updated Keccak hash because the provided index and size extend outside the bounds of the array.");
-            }
-
-            // If the size is zero, quit
-            if (size == 0)
-            {
-                return;
-            }
-
-            // Create the input buffer
-            Span<byte> input = array;
-            input = input.Slice(index, size);
-
-            // If our provided state is empty, initialize a new one
-            if (_state.Length == 0)
-            {
-                _state = new ulong[Keccak256Service.State_Size_B_InBytes / 8];
-            }
-
-            // If our remainder is non zero.
-            int i;
-            if (_remainderLength != 0)
-            {
-                // Copy data to our remainder
-                var remainderAdditive = input.Slice(0, Math.Min(input.Length, _roundSize - _remainderLength));
-                remainderAdditive.CopyTo(_remainderBuffer.Slice(_remainderLength).Span);
-
-                // Increment the length
-                _remainderLength += remainderAdditive.Length;
-
-                // Increment the input
-                input = input.Slice(remainderAdditive.Length);
-
-                // If our remainder length equals a full round
-                if (_remainderLength == _roundSize)
-                {
-                    // Cast our input to ulongs.
-                    var remainderBufferU64 = MemoryMarshal.Cast<byte, ulong>(_remainderBuffer.Span);
-
-                    // Loop for each ulong in this remainder, and xor the state with the input.
-                    for (i = 0; i < _roundSizeU64; i++)
-                    {
-                        _state.Span[i] ^= remainderBufferU64[i];
-                    }
-
-                    // Perform our keccakF on our state.
-                    KeccakRoot.Keccak256.KeccakF(_state.Span, Keccak256Service.ROUNDS);
-
-                    // Clear remainder fields
-                    _remainderLength = 0;
-                    _remainderBuffer.Span.Clear();
-                }
-            }
-
-            // Loop for every round in our size.
-            while (input.Length >= _roundSize)
-            {
-                // Cast our input to ulongs.
-                var input64 = MemoryMarshal.Cast<byte, ulong>(input);
-
-                // Loop for each ulong in this round, and xor the state with the input.
-                for (i = 0; i < _roundSizeU64; i++)
-                {
-                    _state.Span[i] ^= input64[i];
-                }
-
-                // Perform our keccakF on our state.
-                KeccakRoot.Keccak256.KeccakF(_state.Span, Keccak256Service.ROUNDS);
-
-                // Remove the input data processed this round.
-                input = input.Slice(_roundSize);
-            }
-
-            // last block and padding
-            if (input.Length >= Keccak256Service.TEMP_BUFF_SIZE || input.Length > _roundSize || _roundSize + 1 >= Keccak256Service.TEMP_BUFF_SIZE || _roundSize == 0 || _roundSize - 1 >= Keccak256Service.TEMP_BUFF_SIZE || _roundSizeU64 * 8 > Keccak256Service.TEMP_BUFF_SIZE)
-            {
-                throw new ArgumentException("Bad keccak use");
-            }
-
-            // If we have any remainder here, it means any remainder was processed before, we can copy our data over and set our length
-            if (input.Length > 0)
-            {
-                input.CopyTo(_remainderBuffer.Span);
-                _remainderLength = input.Length;
-            }
-
-            // Set the hash as null
-            _hash = null;
-        }
-
-        private byte[] UpdateFinal()
-        {
-            // Copy the remainder buffer
-            Memory<byte> remainderClone = _remainderBuffer.ToArray();
-
-            // Set a 1 byte after the remainder.
-            remainderClone.Span[_remainderLength++] = 1;
-
-            // Set the highest bit on the last byte.
-            remainderClone.Span[_roundSize - 1] |= 0x80;
-
-            // Cast the remainder buffer to ulongs.
-            var temp64 = MemoryMarshal.Cast<byte, ulong>(remainderClone.Span);
-
-            // Loop for each ulong in this round, and xor the state with the input.
-            for (int i = 0; i < _roundSizeU64; i++)
-            {
-                _state.Span[i] ^= temp64[i];
-            }
-
-            KeccakRoot.Keccak256.KeccakF(_state.Span, Keccak256Service.ROUNDS);
-
-            // Obtain the state data in the desired (hash) size we want.
-            _hash = MemoryMarshal.AsBytes(_state.Span).Slice(0, HashSize).ToArray();
-
-            // Return the result.
-            return Hash;
-        }
-
-        public void Reset()
-        {
-            // Clear our hash state information.
-            _state.Span.Clear();
-            _remainderBuffer.Span.Clear();
-            _remainderLength = 0;
-            _hash = null;
-        }
-        #endregion
+    
 
     }
 }

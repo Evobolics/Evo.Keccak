@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../eng/targets/net50_packaged.targets" />
   <PropertyGroup>
     <Authors>Evobolics</Authors>
@@ -14,6 +14,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Evo.Hexadecimals" Version="21.0.102.2" />
-    <PackageReference Include="Evo.Strings" Version="21.0.102.2" />
+    <PackageReference Include="Evo.Strings" Version="21.0.102.4" />
+    
   </ItemGroup>
 </Project>
