@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Evo.Services
+﻿namespace Evo.Services.Cryptography
 {
-    public class Keccak256Service
+    public class Keccak256Service : Keccak256Service_I
     {
         #region Constants
         public const int HASH_SIZE = 32;
