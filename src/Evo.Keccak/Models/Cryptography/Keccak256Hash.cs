@@ -1,13 +1,15 @@
-﻿using System;
+﻿using Evo.Keccak;
+using Evo.Services;
+using System;
 using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Evo.Keccak
+namespace Evo.Models.Cryptography
 {
-    public class KeccakHash
+    public class Keccak256Hash
     {
         // For useful links discussing the Keccak algorithm and additional notes, please see: 
         //
@@ -72,14 +74,7 @@ namespace Evo.Keccak
         //     a[x][y][z] = s[w(5y + x) + z]
         //
 
-        #region Constants
-        public const int HASH_SIZE = 32;
-        private const int STATE_SIZE = 200;
-        private const int HASH_DATA_AREA = 136;
-        private const int ROUNDS = 24;
-        private const int LANE_BITS = 8 * 8;
-        private const int TEMP_BUFF_SIZE = 144;
-        #endregion
+        
 
         #region Fields
         private static readonly ulong[] RoundConstants =
@@ -133,19 +128,19 @@ namespace Evo.Keccak
         #endregion
 
         #region Constructor
-        private KeccakHash(int size)
+        private Keccak256Hash(int size)
         {
             // Set the hash size
             HashSize = size;
 
             // Verify the size
-            if (HashSize <= 0 || HashSize > STATE_SIZE)
+            if (HashSize <= 0 || HashSize > Keccak256Service.STATE_SIZE)
             {
-                throw new ArgumentException($"Invalid Keccak hash size. Must be between 0 and {STATE_SIZE}.");
+                throw new ArgumentException($"Invalid Keccak hash size. Must be between 0 and {Keccak256Service.STATE_SIZE}.");
             }
 
             // The round size.
-            _roundSize = STATE_SIZE == HashSize ? HASH_DATA_AREA : STATE_SIZE - (2 * HashSize);
+            _roundSize = Keccak256Service.STATE_SIZE == HashSize ? Keccak256Service.HASH_DATA_AREA : Keccak256Service.STATE_SIZE - 2 * HashSize;
 
             // The size of a round in terms of ulong.
             _roundSizeU64 = _roundSize / 8;
@@ -158,15 +153,15 @@ namespace Evo.Keccak
 
         #region Functions
 
-        public static KeccakHash Create(int size = HASH_SIZE)
+        public static Keccak256Hash Create(int size = Keccak256Service.HASH_SIZE)
         {
-            return new KeccakHash(size);
+            return new Keccak256Hash(size);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ulong ROL(ulong a, int offset)
         {
-            return (a << (offset % LANE_BITS)) ^ (a >> (LANE_BITS - (offset % LANE_BITS)));
+            return a << offset % Keccak256Service.LANE_BITS ^ a >> Keccak256Service.LANE_BITS - offset % Keccak256Service.LANE_BITS;
         }
 
         // update the state with given number of rounds
@@ -214,7 +209,7 @@ namespace Evo.Keccak
             aso = st[23];
             asu = st[24];
 
-            for (var round = 0; round < ROUNDS; round += 2)
+            for (var round = 0; round < Keccak256Service.ROUNDS; round += 2)
             {
                 //    prepareTheta
                 bCa = aba ^ aga ^ aka ^ ama ^ asa;
@@ -240,12 +235,12 @@ namespace Evo.Keccak
                 bCo = ROL(amo, 21);
                 asu ^= du;
                 bCu = ROL(asu, 14);
-                eba = bCa ^ ((~bCe) & bCi);
+                eba = bCa ^ ~bCe & bCi;
                 eba ^= RoundConstants[round];
-                ebe = bCe ^ ((~bCi) & bCo);
-                ebi = bCi ^ ((~bCo) & bCu);
-                ebo = bCo ^ ((~bCu) & bCa);
-                ebu = bCu ^ ((~bCa) & bCe);
+                ebe = bCe ^ ~bCi & bCo;
+                ebi = bCi ^ ~bCo & bCu;
+                ebo = bCo ^ ~bCu & bCa;
+                ebu = bCu ^ ~bCa & bCe;
 
                 abo ^= @do;
                 bCa = ROL(abo, 28);
@@ -257,11 +252,11 @@ namespace Evo.Keccak
                 bCo = ROL(ame, 45);
                 asi ^= di;
                 bCu = ROL(asi, 61);
-                ega = bCa ^ ((~bCe) & bCi);
-                ege = bCe ^ ((~bCi) & bCo);
-                egi = bCi ^ ((~bCo) & bCu);
-                ego = bCo ^ ((~bCu) & bCa);
-                egu = bCu ^ ((~bCa) & bCe);
+                ega = bCa ^ ~bCe & bCi;
+                ege = bCe ^ ~bCi & bCo;
+                egi = bCi ^ ~bCo & bCu;
+                ego = bCo ^ ~bCu & bCa;
+                egu = bCu ^ ~bCa & bCe;
 
                 abe ^= de;
                 bCa = ROL(abe, 1);
@@ -273,11 +268,11 @@ namespace Evo.Keccak
                 bCo = ROL(amu, 8);
                 asa ^= da;
                 bCu = ROL(asa, 18);
-                eka = bCa ^ ((~bCe) & bCi);
-                eke = bCe ^ ((~bCi) & bCo);
-                eki = bCi ^ ((~bCo) & bCu);
-                eko = bCo ^ ((~bCu) & bCa);
-                eku = bCu ^ ((~bCa) & bCe);
+                eka = bCa ^ ~bCe & bCi;
+                eke = bCe ^ ~bCi & bCo;
+                eki = bCi ^ ~bCo & bCu;
+                eko = bCo ^ ~bCu & bCa;
+                eku = bCu ^ ~bCa & bCe;
 
                 abu ^= du;
                 bCa = ROL(abu, 27);
@@ -289,11 +284,11 @@ namespace Evo.Keccak
                 bCo = ROL(ami, 15);
                 aso ^= @do;
                 bCu = ROL(aso, 56);
-                ema = bCa ^ ((~bCe) & bCi);
-                eme = bCe ^ ((~bCi) & bCo);
-                emi = bCi ^ ((~bCo) & bCu);
-                emo = bCo ^ ((~bCu) & bCa);
-                emu = bCu ^ ((~bCa) & bCe);
+                ema = bCa ^ ~bCe & bCi;
+                eme = bCe ^ ~bCi & bCo;
+                emi = bCi ^ ~bCo & bCu;
+                emo = bCo ^ ~bCu & bCa;
+                emu = bCu ^ ~bCa & bCe;
 
                 abi ^= di;
                 bCa = ROL(abi, 62);
@@ -305,11 +300,11 @@ namespace Evo.Keccak
                 bCo = ROL(ama, 41);
                 ase ^= de;
                 bCu = ROL(ase, 2);
-                esa = bCa ^ ((~bCe) & bCi);
-                ese = bCe ^ ((~bCi) & bCo);
-                esi = bCi ^ ((~bCo) & bCu);
-                eso = bCo ^ ((~bCu) & bCa);
-                esu = bCu ^ ((~bCa) & bCe);
+                esa = bCa ^ ~bCe & bCi;
+                ese = bCe ^ ~bCi & bCo;
+                esi = bCi ^ ~bCo & bCu;
+                eso = bCo ^ ~bCu & bCa;
+                esu = bCu ^ ~bCa & bCe;
 
                 //    prepareTheta
                 bCa = eba ^ ega ^ eka ^ ema ^ esa;
@@ -335,12 +330,12 @@ namespace Evo.Keccak
                 bCo = ROL(emo, 21);
                 esu ^= du;
                 bCu = ROL(esu, 14);
-                aba = bCa ^ ((~bCe) & bCi);
+                aba = bCa ^ ~bCe & bCi;
                 aba ^= RoundConstants[round + 1];
-                abe = bCe ^ ((~bCi) & bCo);
-                abi = bCi ^ ((~bCo) & bCu);
-                abo = bCo ^ ((~bCu) & bCa);
-                abu = bCu ^ ((~bCa) & bCe);
+                abe = bCe ^ ~bCi & bCo;
+                abi = bCi ^ ~bCo & bCu;
+                abo = bCo ^ ~bCu & bCa;
+                abu = bCu ^ ~bCa & bCe;
 
                 ebo ^= @do;
                 bCa = ROL(ebo, 28);
@@ -352,11 +347,11 @@ namespace Evo.Keccak
                 bCo = ROL(eme, 45);
                 esi ^= di;
                 bCu = ROL(esi, 61);
-                aga = bCa ^ ((~bCe) & bCi);
-                age = bCe ^ ((~bCi) & bCo);
-                agi = bCi ^ ((~bCo) & bCu);
-                ago = bCo ^ ((~bCu) & bCa);
-                agu = bCu ^ ((~bCa) & bCe);
+                aga = bCa ^ ~bCe & bCi;
+                age = bCe ^ ~bCi & bCo;
+                agi = bCi ^ ~bCo & bCu;
+                ago = bCo ^ ~bCu & bCa;
+                agu = bCu ^ ~bCa & bCe;
 
                 ebe ^= de;
                 bCa = ROL(ebe, 1);
@@ -368,11 +363,11 @@ namespace Evo.Keccak
                 bCo = ROL(emu, 8);
                 esa ^= da;
                 bCu = ROL(esa, 18);
-                aka = bCa ^ ((~bCe) & bCi);
-                ake = bCe ^ ((~bCi) & bCo);
-                aki = bCi ^ ((~bCo) & bCu);
-                ako = bCo ^ ((~bCu) & bCa);
-                aku = bCu ^ ((~bCa) & bCe);
+                aka = bCa ^ ~bCe & bCi;
+                ake = bCe ^ ~bCi & bCo;
+                aki = bCi ^ ~bCo & bCu;
+                ako = bCo ^ ~bCu & bCa;
+                aku = bCu ^ ~bCa & bCe;
 
                 ebu ^= du;
                 bCa = ROL(ebu, 27);
@@ -384,11 +379,11 @@ namespace Evo.Keccak
                 bCo = ROL(emi, 15);
                 eso ^= @do;
                 bCu = ROL(eso, 56);
-                ama = bCa ^ ((~bCe) & bCi);
-                ame = bCe ^ ((~bCi) & bCo);
-                ami = bCi ^ ((~bCo) & bCu);
-                amo = bCo ^ ((~bCu) & bCa);
-                amu = bCu ^ ((~bCa) & bCe);
+                ama = bCa ^ ~bCe & bCi;
+                ame = bCe ^ ~bCi & bCo;
+                ami = bCi ^ ~bCo & bCu;
+                amo = bCo ^ ~bCu & bCa;
+                amu = bCu ^ ~bCa & bCe;
 
                 ebi ^= di;
                 bCa = ROL(ebi, 62);
@@ -400,11 +395,11 @@ namespace Evo.Keccak
                 bCo = ROL(ema, 41);
                 ese ^= de;
                 bCu = ROL(ese, 2);
-                asa = bCa ^ ((~bCe) & bCi);
-                ase = bCe ^ ((~bCi) & bCo);
-                asi = bCi ^ ((~bCo) & bCu);
-                aso = bCo ^ ((~bCu) & bCa);
-                asu = bCu ^ ((~bCa) & bCe);
+                asa = bCa ^ ~bCe & bCi;
+                ase = bCe ^ ~bCi & bCo;
+                asi = bCi ^ ~bCo & bCu;
+                aso = bCo ^ ~bCu & bCa;
+                asu = bCu ^ ~bCa & bCe;
             }
 
             //copyToState(state, A)
@@ -450,10 +445,10 @@ namespace Evo.Keccak
 
         /// <summary>
         /// Computes the hash of a string using given string encoding.
-        /// For example <see cref="System.Text.Encoding.ASCII"/>
+        /// For example <see cref="Encoding.ASCII"/>
         /// </summary>
         /// <param name="inputString">String to be converted to bytes and hashed.</param>
-        /// <param name="stringEncoding">The string encoding to use. For example <see cref="System.Text.Encoding.ASCII"/></param>
+        /// <param name="stringEncoding">The string encoding to use. For example <see cref="Encoding.ASCII"/></param>
         /// <returns></returns>
         public static byte[] FromString(string inputString, Encoding stringEncoding)
         {
@@ -476,16 +471,16 @@ namespace Evo.Keccak
             return output;
         }
 
-        public static Span<byte> ComputeHash(Span<byte> input, int size = HASH_SIZE)
+        public static Span<byte> ComputeHash(Span<byte> input, int size = Keccak256Service.HASH_SIZE)
         {
             Span<byte> output = new byte[size];
             ComputeHash(input, output);
             return output;
         }
 
-        public static byte[] ComputeHashBytes(Span<byte> input, int size = HASH_SIZE)
+        public static byte[] ComputeHashBytes(Span<byte> input, int size = Keccak256Service.HASH_SIZE)
         {
-            var output = new byte[HASH_SIZE];
+            var output = new byte[Keccak256Service.HASH_SIZE];
             ComputeHash(input, output);
             return output;
         }
@@ -496,23 +491,23 @@ namespace Evo.Keccak
         // compute a keccak hash (md) of given byte length from "in"
         public static void ComputeHash(Span<byte> input, Span<byte> output)
         {
-            if (output.Length <= 0 || output.Length > STATE_SIZE)
+            if (output.Length <= 0 || output.Length > Keccak256Service.STATE_SIZE)
             {
                 throw new ArgumentException("Bad keccak use");
             }
 
-            byte[] stateArray = _arrayPool.Rent(STATE_SIZE);
-            byte[] tempArray = _arrayPool.Rent(TEMP_BUFF_SIZE);
+            byte[] stateArray = _arrayPool.Rent(Keccak256Service.STATE_SIZE);
+            byte[] tempArray = _arrayPool.Rent(Keccak256Service.TEMP_BUFF_SIZE);
 
             try
             {
-                Span<ulong> state = MemoryMarshal.Cast<byte, ulong>(stateArray.AsSpan(0, STATE_SIZE));
-                Span<byte> temp = tempArray.AsSpan(0, TEMP_BUFF_SIZE);
+                Span<ulong> state = MemoryMarshal.Cast<byte, ulong>(stateArray.AsSpan(0, Keccak256Service.STATE_SIZE));
+                Span<byte> temp = tempArray.AsSpan(0, Keccak256Service.TEMP_BUFF_SIZE);
 
                 state.Clear();
                 temp.Clear();
 
-                int roundSize = STATE_SIZE == output.Length ? HASH_DATA_AREA : STATE_SIZE - (2 * output.Length);
+                int roundSize = Keccak256Service.STATE_SIZE == output.Length ? Keccak256Service.HASH_DATA_AREA : Keccak256Service.STATE_SIZE - 2 * output.Length;
                 int roundSizeU64 = roundSize / 8;
 
                 var inputLength = input.Length;
@@ -526,11 +521,11 @@ namespace Evo.Keccak
                         state[i] ^= input64[i];
                     }
 
-                    KeccakF(state, ROUNDS);
+                    KeccakF(state, Keccak256Service.ROUNDS);
                 }
 
                 // last block and padding
-                if (inputLength >= TEMP_BUFF_SIZE || inputLength > roundSize || roundSize - inputLength + inputLength + 1 >= TEMP_BUFF_SIZE || roundSize == 0 || roundSize - 1 >= TEMP_BUFF_SIZE || roundSizeU64 * 8 > TEMP_BUFF_SIZE)
+                if (inputLength >= Keccak256Service.TEMP_BUFF_SIZE || inputLength > roundSize || roundSize - inputLength + inputLength + 1 >= Keccak256Service.TEMP_BUFF_SIZE || roundSize == 0 || roundSize - 1 >= Keccak256Service.TEMP_BUFF_SIZE || roundSizeU64 * 8 > Keccak256Service.TEMP_BUFF_SIZE)
                 {
                     throw new ArgumentException("Bad keccak use");
                 }
@@ -546,7 +541,7 @@ namespace Evo.Keccak
                     state[i] ^= tempU64[i];
                 }
 
-                KeccakF(state, ROUNDS);
+                KeccakF(state, Keccak256Service.ROUNDS);
                 MemoryMarshal.AsBytes(state).Slice(0, output.Length).CopyTo(output);
             }
             finally
@@ -558,9 +553,9 @@ namespace Evo.Keccak
 
         public static void Keccak1600(Span<byte> input, Span<byte> output)
         {
-            if (output.Length != STATE_SIZE)
+            if (output.Length != Keccak256Service.STATE_SIZE)
             {
-                throw new ArgumentException($"Output length must be {STATE_SIZE} bytes");
+                throw new ArgumentException($"Output length must be {Keccak256Service.STATE_SIZE} bytes");
             }
 
             ComputeHash(input, output);
@@ -591,7 +586,7 @@ namespace Evo.Keccak
             // If our provided state is empty, initialize a new one
             if (_state.Length == 0)
             {
-                _state = new ulong[STATE_SIZE / 8];
+                _state = new ulong[Keccak256Service.STATE_SIZE / 8];
             }
 
             // If our remainder is non zero.
@@ -621,7 +616,7 @@ namespace Evo.Keccak
                     }
 
                     // Perform our keccakF on our state.
-                    KeccakF(_state.Span, ROUNDS);
+                    KeccakF(_state.Span, Keccak256Service.ROUNDS);
 
                     // Clear remainder fields
                     _remainderLength = 0;
@@ -642,14 +637,14 @@ namespace Evo.Keccak
                 }
 
                 // Perform our keccakF on our state.
-                KeccakF(_state.Span, ROUNDS);
+                KeccakF(_state.Span, Keccak256Service.ROUNDS);
 
                 // Remove the input data processed this round.
                 input = input.Slice(_roundSize);
             }
 
             // last block and padding
-            if (input.Length >= TEMP_BUFF_SIZE || input.Length > _roundSize || _roundSize + 1 >= TEMP_BUFF_SIZE || _roundSize == 0 || _roundSize - 1 >= TEMP_BUFF_SIZE || _roundSizeU64 * 8 > TEMP_BUFF_SIZE)
+            if (input.Length >= Keccak256Service.TEMP_BUFF_SIZE || input.Length > _roundSize || _roundSize + 1 >= Keccak256Service.TEMP_BUFF_SIZE || _roundSize == 0 || _roundSize - 1 >= Keccak256Service.TEMP_BUFF_SIZE || _roundSizeU64 * 8 > Keccak256Service.TEMP_BUFF_SIZE)
             {
                 throw new ArgumentException("Bad keccak use");
             }
@@ -685,7 +680,7 @@ namespace Evo.Keccak
                 _state.Span[i] ^= temp64[i];
             }
 
-            KeccakF(_state.Span, ROUNDS);
+            KeccakF(_state.Span, Keccak256Service.ROUNDS);
 
             // Obtain the state data in the desired (hash) size we want.
             _hash = MemoryMarshal.AsBytes(_state.Span).Slice(0, HashSize).ToArray();
