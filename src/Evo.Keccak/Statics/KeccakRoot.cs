@@ -2,7 +2,7 @@
 
 namespace Evo.Statics
 {
-    class Root
+    public class KeccakRoot
     {
         public static Keccak256Service Keccak256 { get; set; } = new Keccak256Service();
     }

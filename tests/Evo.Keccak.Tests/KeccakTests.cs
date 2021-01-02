@@ -1,4 +1,5 @@
 ﻿using Evo.Models.Cryptography;
+using Evo.Statics;
 using System;
 
 using Xunit;
@@ -22,7 +23,7 @@ namespace Evo.Keccak.Tests
         [InlineData("ffabf9bba2127c4928d360c9905cb4911f0ec21b9c3b89f3b242bccc68389e36", "訊息摘要演算法第五版（英語：Message-Digest Algorithm 5，縮寫為MD5），是當前電腦領域用於確保資訊傳輸完整一致而廣泛使用的雜湊演算法之一（又譯雜湊演算法、摘要演算法等），主流程式語言普遍已有MD5的實作。", true)]
         public void TestKeccakHashing(string expected, string input, bool shouldMatch)
         {
-            var result = Keccak256Hash.FromString(input).ToHexString(hexPrefix: false);
+            var result = KeccakRoot.Keccak256.FromString(input).ToHexString(hexPrefix: false);
             if (shouldMatch)
             {
                 Assert.Equal(expected, result);
@@ -51,10 +52,10 @@ namespace Evo.Keccak.Tests
                 int splitThreshold = random.Next(33, 1024);
 
                 // Compute the overall hash on the data
-                byte[] singleStepHash = Keccak256Hash.ComputeHashBytes(buffer);
+                byte[] singleStepHash = KeccakRoot.Keccak256.ComputeHashBytes(buffer);
 
                 // Create our keccak hash provider for multi step hash calculation.
-                Keccak256Hash keccak = Keccak256Hash.Create();
+                Keccak256Hash keccak = KeccakRoot.Keccak256.Create();
                 keccak.Update(bufferArray, 0, buffer.Length);
 
                 // Assert the hashes are equal
@@ -78,7 +79,7 @@ namespace Evo.Keccak.Tests
                 keccak.Reset();
                 keccak.Update(Array.Empty<byte>(), 0, 0);
                 keccak.Update(Array.Empty<byte>(), 0, 0);
-                byte[] blankHash = Keccak256Hash.ComputeHashBytes(Array.Empty<byte>());
+                byte[] blankHash = KeccakRoot.Keccak256.ComputeHashBytes(Array.Empty<byte>());
                 Assert.Equal(blankHash.ToHexString(), keccak.Hash.ToHexString());
 
                 // Refresh our new keccak instance
