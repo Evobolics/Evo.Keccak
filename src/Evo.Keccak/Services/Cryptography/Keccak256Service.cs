@@ -49,9 +49,9 @@ namespace Evo.Services.Cryptography
         //    return new Keccak256RefStruct();
         //}
 
-        public Keccak256Hash Create(int size = HASH_SIZE_InBytes)
+        public Keccak256 Create(int size = HASH_SIZE_InBytes)
         {
-            Keccak256Hash keccak = new Keccak256Hash();
+            Keccak256 keccak = new Keccak256();
 
             // Set the hash size
             keccak.HashSize = size;
@@ -478,7 +478,7 @@ namespace Evo.Services.Cryptography
             ComputeHash(input, output);
         }
 
-        public void Update(Keccak256Hash keccak, byte[] array, int index, int size)
+        public void Update(Keccak256 keccak, byte[] array, int index, int size)
         {
             // Bounds checking.
             if (size < 0)
@@ -577,7 +577,7 @@ namespace Evo.Services.Cryptography
             keccak._hash = null;
         }
 
-        public byte[] UpdateFinal(Keccak256Hash keccak)
+        public byte[] UpdateFinal(Keccak256 keccak)
         {
             // Copy the remainder buffer
             Memory<byte> remainderClone = keccak.RemainderBuffer.ToArray();
@@ -606,7 +606,7 @@ namespace Evo.Services.Cryptography
             return keccak.Hash;
         }
 
-        public void Reset(Keccak256Hash keccak)
+        public void Reset(Keccak256 keccak)
         {
             // Clear our hash state information.
             keccak.State.Span.Clear();

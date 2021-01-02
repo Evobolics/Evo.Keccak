@@ -55,7 +55,7 @@ namespace Evo.Keccak.Tests
                 byte[] singleStepHash = KeccakRoot.Keccak256.ComputeHashBytes(buffer);
 
                 // Create our keccak hash provider for multi step hash calculation.
-                Keccak256Hash keccak = KeccakRoot.Keccak256.Create();
+                Keccak256 keccak = KeccakRoot.Keccak256.Create();
                 keccak.Update(bufferArray, 0, buffer.Length);
 
                 // Assert the hashes are equal
