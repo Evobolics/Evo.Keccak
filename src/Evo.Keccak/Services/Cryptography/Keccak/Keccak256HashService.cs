@@ -10,7 +10,7 @@ using System.Text;
 
 namespace Evo.Services.Cryptography
 {
-    public class Keccak256Service : Keccak256Service_I
+    public class Keccak256HashService : Keccak256HashService_I
     {
         #region Constants
         public const int State_Size_B_InBits = 1600;
@@ -82,269 +82,273 @@ namespace Evo.Services.Cryptography
         }
 
         // update the state with given number of rounds
-        public void KeccakF(Span<ulong> st, int rounds)
+        public void KeccakF(Span<ulong> st, int rounds = ROUNDS)
         {
             Debug.Assert(st.Length == 25);
 
-            ulong aba, abe, abi, abo, abu;
-            ulong aga, age, agi, ago, agu;
-            ulong aka, ake, aki, ako, aku;
-            ulong ama, ame, ami, amo, amu;
-            ulong asa, ase, asi, aso, asu;
-            ulong bCa, bCe, bCi, bCo, bCu;
-            ulong da, de, di, @do, du;
-            ulong eba, ebe, ebi, ebo, ebu;
-            ulong ega, ege, egi, ego, egu;
-            ulong eka, eke, eki, eko, eku;
-            ulong ema, eme, emi, emo, emu;
-            ulong esa, ese, esi, eso, esu;
+            ulong a04, a14, a24, a34, a44;
+            ulong a03, a13, a23, a33, a43;
+            ulong a02, a12, a22, a32, a42;
+            ulong a01, a11, a21, a31, a41;
+            ulong a00, a10, a20, a30, a40;
+
+            ulong C0, C1, C2, C3, C4;
+            ulong D0, D1, D2, D3, D4;
+
+            ulong e04, e14, e24, e34, e44;
+            ulong e03, eme, emi, emo, emu;
+            ulong e02, eke, eki, eko, eku;
+            ulong e01, ege, egi, ego, egu;
+            ulong e00, e10, e20, e30, e40;
 
             //copyFromState(A, state)
-            aba = st[0];
-            abe = st[1];
-            abi = st[2];
-            abo = st[3];
-            abu = st[4];
-            aga = st[5];
-            age = st[6];
-            agi = st[7];
-            ago = st[8];
-            agu = st[9];
-            aka = st[10];
-            ake = st[11];
-            aki = st[12];
-            ako = st[13];
-            aku = st[14];
-            ama = st[15];
-            ame = st[16];
-            ami = st[17];
-            amo = st[18];
-            amu = st[19];
-            asa = st[20];
-            ase = st[21];
-            asi = st[22];
-            aso = st[23];
-            asu = st[24];
+            a00 = st[0];
+            a10 = st[1];
+            a20 = st[2];
+            a30 = st[3];
+            a40 = st[4];
+            a01 = st[5];
+            a11 = st[6];
+            a21 = st[7];
+            a31 = st[8];
+            a41 = st[9];
+            a02 = st[10];
+            a12 = st[11];
+            a22 = st[12];
+            a32 = st[13];
+            a42 = st[14];
+            a03 = st[15];
+            a13 = st[16];
+            a23 = st[17];
+            a33 = st[18];
+            a43 = st[19];
+            a04 = st[20];
+            a14 = st[21];
+            a24 = st[22];
+            a34 = st[23];
+            a44 = st[24];
 
-            for (var round = 0; round < ROUNDS; round += 2)
+            for (var round = 0; round < rounds; round += 2)
             {
                 //    prepareTheta
-                bCa = aba ^ aga ^ aka ^ ama ^ asa;
-                bCe = abe ^ age ^ ake ^ ame ^ ase;
-                bCi = abi ^ agi ^ aki ^ ami ^ asi;
-                bCo = abo ^ ago ^ ako ^ amo ^ aso;
-                bCu = abu ^ agu ^ aku ^ amu ^ asu;
+                C0 = a00 ^ a01 ^ a02 ^ a03 ^ a04;
+                C1 = a10 ^ a11 ^ a12 ^ a13 ^ a14;
+                C2 = a20 ^ a21 ^ a22 ^ a23 ^ a24;
+                C3 = a30 ^ a31 ^ a32 ^ a33 ^ a34;
+                C4 = a40 ^ a41 ^ a42 ^ a43 ^ a44;
 
                 //thetaRhoPiChiIotaPrepareTheta(round  , A, E)
-                da = bCu ^ ROL(bCe, 1);
-                de = bCa ^ ROL(bCi, 1);
-                di = bCe ^ ROL(bCo, 1);
-                @do = bCi ^ ROL(bCu, 1);
-                du = bCo ^ ROL(bCa, 1);
+                D0 = C4 ^ ROL(C1, 1);
+                D1 = C0 ^ ROL(C2, 1);
+                D2 = C1 ^ ROL(C3, 1);
+                D3 = C2 ^ ROL(C4, 1);
+                D4 = C3 ^ ROL(C0, 1);
 
-                aba ^= da;
-                bCa = aba;
-                age ^= de;
-                bCe = ROL(age, 44);
-                aki ^= di;
-                bCi = ROL(aki, 43);
-                amo ^= @do;
-                bCo = ROL(amo, 21);
-                asu ^= du;
-                bCu = ROL(asu, 14);
-                eba = bCa ^ ~bCe & bCi;
-                eba ^= RoundConstants[round];
-                ebe = bCe ^ ~bCi & bCo;
-                ebi = bCi ^ ~bCo & bCu;
-                ebo = bCo ^ ~bCu & bCa;
-                ebu = bCu ^ ~bCa & bCe;
+                a00 ^= D0;
+                C0 = a00;
+                a11 ^= D1;
+                C1 = ROL(a11, 44);
+                a22 ^= D2;
+                C2 = ROL(a22, 43);
+                a33 ^= D3;
+                C3 = ROL(a33, 21);
+                a44 ^= D4;
+                C4 = ROL(a44, 14);
 
-                abo ^= @do;
-                bCa = ROL(abo, 28);
-                agu ^= du;
-                bCe = ROL(agu, 20);
-                aka ^= da;
-                bCi = ROL(aka, 3);
-                ame ^= de;
-                bCo = ROL(ame, 45);
-                asi ^= di;
-                bCu = ROL(asi, 61);
-                ega = bCa ^ ~bCe & bCi;
-                ege = bCe ^ ~bCi & bCo;
-                egi = bCi ^ ~bCo & bCu;
-                ego = bCo ^ ~bCu & bCa;
-                egu = bCu ^ ~bCa & bCe;
+                e00 = C0 ^ ~C1 & C2;
+                e00 ^= RoundConstants[round];
+                e10 = C1 ^ ~C2 & C3;
+                e20 = C2 ^ ~C3 & C4;
+                e30 = C3 ^ ~C4 & C0;
+                e40 = C4 ^ ~C0 & C1;
 
-                abe ^= de;
-                bCa = ROL(abe, 1);
-                agi ^= di;
-                bCe = ROL(agi, 6);
-                ako ^= @do;
-                bCi = ROL(ako, 25);
-                amu ^= du;
-                bCo = ROL(amu, 8);
-                asa ^= da;
-                bCu = ROL(asa, 18);
-                eka = bCa ^ ~bCe & bCi;
-                eke = bCe ^ ~bCi & bCo;
-                eki = bCi ^ ~bCo & bCu;
-                eko = bCo ^ ~bCu & bCa;
-                eku = bCu ^ ~bCa & bCe;
+                a30 ^= D3;
+                C0 = ROL(a30, 28);
+                a41 ^= D4;
+                C1 = ROL(a41, 20);
+                a02 ^= D0;
+                C2 = ROL(a02, 3);
+                a13 ^= D1;
+                C3 = ROL(a13, 45);
+                a24 ^= D2;
+                C4 = ROL(a24, 61);
+                e01 = C0 ^ ~C1 & C2;
+                ege = C1 ^ ~C2 & C3;
+                egi = C2 ^ ~C3 & C4;
+                ego = C3 ^ ~C4 & C0;
+                egu = C4 ^ ~C0 & C1;
 
-                abu ^= du;
-                bCa = ROL(abu, 27);
-                aga ^= da;
-                bCe = ROL(aga, 36);
-                ake ^= de;
-                bCi = ROL(ake, 10);
-                ami ^= di;
-                bCo = ROL(ami, 15);
-                aso ^= @do;
-                bCu = ROL(aso, 56);
-                ema = bCa ^ ~bCe & bCi;
-                eme = bCe ^ ~bCi & bCo;
-                emi = bCi ^ ~bCo & bCu;
-                emo = bCo ^ ~bCu & bCa;
-                emu = bCu ^ ~bCa & bCe;
+                a10 ^= D1;
+                C0 = ROL(a10, 1);
+                a21 ^= D2;
+                C1 = ROL(a21, 6);
+                a32 ^= D3;
+                C2 = ROL(a32, 25);
+                a43 ^= D4;
+                C3 = ROL(a43, 8);
+                a04 ^= D0;
+                C4 = ROL(a04, 18);
+                e02 = C0 ^ ~C1 & C2;
+                eke = C1 ^ ~C2 & C3;
+                eki = C2 ^ ~C3 & C4;
+                eko = C3 ^ ~C4 & C0;
+                eku = C4 ^ ~C0 & C1;
 
-                abi ^= di;
-                bCa = ROL(abi, 62);
-                ago ^= @do;
-                bCe = ROL(ago, 55);
-                aku ^= du;
-                bCi = ROL(aku, 39);
-                ama ^= da;
-                bCo = ROL(ama, 41);
-                ase ^= de;
-                bCu = ROL(ase, 2);
-                esa = bCa ^ ~bCe & bCi;
-                ese = bCe ^ ~bCi & bCo;
-                esi = bCi ^ ~bCo & bCu;
-                eso = bCo ^ ~bCu & bCa;
-                esu = bCu ^ ~bCa & bCe;
+                a40 ^= D4;
+                C0 = ROL(a40, 27);
+                a01 ^= D0;
+                C1 = ROL(a01, 36);
+                a12 ^= D1;
+                C2 = ROL(a12, 10);
+                a23 ^= D2;
+                C3 = ROL(a23, 15);
+                a34 ^= D3;
+                C4 = ROL(a34, 56);
+
+                e03 = C0 ^ ~C1 & C2;
+                eme = C1 ^ ~C2 & C3;
+                emi = C2 ^ ~C3 & C4;
+                emo = C3 ^ ~C4 & C0;
+                emu = C4 ^ ~C0 & C1;
+
+                a20 ^= D2;
+                C0 = ROL(a20, 62);
+                a31 ^= D3;
+                C1 = ROL(a31, 55);
+                a42 ^= D4;
+                C2 = ROL(a42, 39);
+                a03 ^= D0;
+                C3 = ROL(a03, 41);
+                a14 ^= D1;
+                C4 = ROL(a14, 2);
+                e04 = C0 ^ ~C1 & C2;
+                e14 = C1 ^ ~C2 & C3;
+                e24 = C2 ^ ~C3 & C4;
+                e34 = C3 ^ ~C4 & C0;
+                e44 = C4 ^ ~C0 & C1;
 
                 //    prepareTheta
-                bCa = eba ^ ega ^ eka ^ ema ^ esa;
-                bCe = ebe ^ ege ^ eke ^ eme ^ ese;
-                bCi = ebi ^ egi ^ eki ^ emi ^ esi;
-                bCo = ebo ^ ego ^ eko ^ emo ^ eso;
-                bCu = ebu ^ egu ^ eku ^ emu ^ esu;
+                C0 = e00 ^ e01 ^ e02 ^ e03 ^ e04;
+                C1 = e10 ^ ege ^ eke ^ eme ^ e14;
+                C2 = e20 ^ egi ^ eki ^ emi ^ e24;
+                C3 = e30 ^ ego ^ eko ^ emo ^ e34;
+                C4 = e40 ^ egu ^ eku ^ emu ^ e44;
 
                 //thetaRhoPiChiIotaPrepareTheta(round+1, E, A)
-                da = bCu ^ ROL(bCe, 1);
-                de = bCa ^ ROL(bCi, 1);
-                di = bCe ^ ROL(bCo, 1);
-                @do = bCi ^ ROL(bCu, 1);
-                du = bCo ^ ROL(bCa, 1);
+                D0 = C4 ^ ROL(C1, 1);
+                D1 = C0 ^ ROL(C2, 1);
+                D2 = C1 ^ ROL(C3, 1);
+                D3 = C2 ^ ROL(C4, 1);
+                D4 = C3 ^ ROL(C0, 1);
 
-                eba ^= da;
-                bCa = eba;
-                ege ^= de;
-                bCe = ROL(ege, 44);
-                eki ^= di;
-                bCi = ROL(eki, 43);
-                emo ^= @do;
-                bCo = ROL(emo, 21);
-                esu ^= du;
-                bCu = ROL(esu, 14);
-                aba = bCa ^ ~bCe & bCi;
-                aba ^= RoundConstants[round + 1];
-                abe = bCe ^ ~bCi & bCo;
-                abi = bCi ^ ~bCo & bCu;
-                abo = bCo ^ ~bCu & bCa;
-                abu = bCu ^ ~bCa & bCe;
+                e00 ^= D0;
+                C0 = e00;
+                ege ^= D1;
+                C1 = ROL(ege, 44);
+                eki ^= D2;
+                C2 = ROL(eki, 43);
+                emo ^= D3;
+                C3 = ROL(emo, 21);
+                e44 ^= D4;
+                C4 = ROL(e44, 14);
+                a00 = C0 ^ ~C1 & C2;
+                a00 ^= RoundConstants[round + 1];
+                a10 = C1 ^ ~C2 & C3;
+                a20 = C2 ^ ~C3 & C4;
+                a30 = C3 ^ ~C4 & C0;
+                a40 = C4 ^ ~C0 & C1;
 
-                ebo ^= @do;
-                bCa = ROL(ebo, 28);
-                egu ^= du;
-                bCe = ROL(egu, 20);
-                eka ^= da;
-                bCi = ROL(eka, 3);
-                eme ^= de;
-                bCo = ROL(eme, 45);
-                esi ^= di;
-                bCu = ROL(esi, 61);
-                aga = bCa ^ ~bCe & bCi;
-                age = bCe ^ ~bCi & bCo;
-                agi = bCi ^ ~bCo & bCu;
-                ago = bCo ^ ~bCu & bCa;
-                agu = bCu ^ ~bCa & bCe;
+                e30 ^= D3;
+                C0 = ROL(e30, 28);
+                egu ^= D4;
+                C1 = ROL(egu, 20);
+                e02 ^= D0;
+                C2 = ROL(e02, 3);
+                eme ^= D1;
+                C3 = ROL(eme, 45);
+                e24 ^= D2;
+                C4 = ROL(e24, 61);
+                a01 = C0 ^ ~C1 & C2;
+                a11 = C1 ^ ~C2 & C3;
+                a21 = C2 ^ ~C3 & C4;
+                a31 = C3 ^ ~C4 & C0;
+                a41 = C4 ^ ~C0 & C1;
 
-                ebe ^= de;
-                bCa = ROL(ebe, 1);
-                egi ^= di;
-                bCe = ROL(egi, 6);
-                eko ^= @do;
-                bCi = ROL(eko, 25);
-                emu ^= du;
-                bCo = ROL(emu, 8);
-                esa ^= da;
-                bCu = ROL(esa, 18);
-                aka = bCa ^ ~bCe & bCi;
-                ake = bCe ^ ~bCi & bCo;
-                aki = bCi ^ ~bCo & bCu;
-                ako = bCo ^ ~bCu & bCa;
-                aku = bCu ^ ~bCa & bCe;
+                e10 ^= D1;
+                C0 = ROL(e10, 1);
+                egi ^= D2;
+                C1 = ROL(egi, 6);
+                eko ^= D3;
+                C2 = ROL(eko, 25);
+                emu ^= D4;
+                C3 = ROL(emu, 8);
+                e04 ^= D0;
+                C4 = ROL(e04, 18);
+                a02 = C0 ^ ~C1 & C2;
+                a12 = C1 ^ ~C2 & C3;
+                a22 = C2 ^ ~C3 & C4;
+                a32 = C3 ^ ~C4 & C0;
+                a42 = C4 ^ ~C0 & C1;
 
-                ebu ^= du;
-                bCa = ROL(ebu, 27);
-                ega ^= da;
-                bCe = ROL(ega, 36);
-                eke ^= de;
-                bCi = ROL(eke, 10);
-                emi ^= di;
-                bCo = ROL(emi, 15);
-                eso ^= @do;
-                bCu = ROL(eso, 56);
-                ama = bCa ^ ~bCe & bCi;
-                ame = bCe ^ ~bCi & bCo;
-                ami = bCi ^ ~bCo & bCu;
-                amo = bCo ^ ~bCu & bCa;
-                amu = bCu ^ ~bCa & bCe;
+                e40 ^= D4;
+                C0 = ROL(e40, 27);
+                e01 ^= D0;
+                C1 = ROL(e01, 36);
+                eke ^= D1;
+                C2 = ROL(eke, 10);
+                emi ^= D2;
+                C3 = ROL(emi, 15);
+                e34 ^= D3;
+                C4 = ROL(e34, 56);
+                a03 = C0 ^ ~C1 & C2;
+                a13 = C1 ^ ~C2 & C3;
+                a23 = C2 ^ ~C3 & C4;
+                a33 = C3 ^ ~C4 & C0;
+                a43 = C4 ^ ~C0 & C1;
 
-                ebi ^= di;
-                bCa = ROL(ebi, 62);
-                ego ^= @do;
-                bCe = ROL(ego, 55);
-                eku ^= du;
-                bCi = ROL(eku, 39);
-                ema ^= da;
-                bCo = ROL(ema, 41);
-                ese ^= de;
-                bCu = ROL(ese, 2);
-                asa = bCa ^ ~bCe & bCi;
-                ase = bCe ^ ~bCi & bCo;
-                asi = bCi ^ ~bCo & bCu;
-                aso = bCo ^ ~bCu & bCa;
-                asu = bCu ^ ~bCa & bCe;
+                e20 ^= D2;
+                C0 = ROL(e20, 62);
+                ego ^= D3;
+                C1 = ROL(ego, 55);
+                eku ^= D4;
+                C2 = ROL(eku, 39);
+                e03 ^= D0;
+                C3 = ROL(e03, 41);
+                e14 ^= D1;
+                C4 = ROL(e14, 2);
+                a04 = C0 ^ ~C1 & C2;
+                a14 = C1 ^ ~C2 & C3;
+                a24 = C2 ^ ~C3 & C4;
+                a34 = C3 ^ ~C4 & C0;
+                a44 = C4 ^ ~C0 & C1;
             }
 
             //copyToState(state, A)
-            st[0] = aba;
-            st[1] = abe;
-            st[2] = abi;
-            st[3] = abo;
-            st[4] = abu;
-            st[5] = aga;
-            st[6] = age;
-            st[7] = agi;
-            st[8] = ago;
-            st[9] = agu;
-            st[10] = aka;
-            st[11] = ake;
-            st[12] = aki;
-            st[13] = ako;
-            st[14] = aku;
-            st[15] = ama;
-            st[16] = ame;
-            st[17] = ami;
-            st[18] = amo;
-            st[19] = amu;
-            st[20] = asa;
-            st[21] = ase;
-            st[22] = asi;
-            st[23] = aso;
-            st[24] = asu;
+            st[0] = a00;
+            st[1] = a10;
+            st[2] = a20;
+            st[3] = a30;
+            st[4] = a40;
+            st[5] = a01;
+            st[6] = a11;
+            st[7] = a21;
+            st[8] = a31;
+            st[9] = a41;
+            st[10] = a02;
+            st[11] = a12;
+            st[12] = a22;
+            st[13] = a32;
+            st[14] = a42;
+            st[15] = a03;
+            st[16] = a13;
+            st[17] = a23;
+            st[18] = a33;
+            st[19] = a43;
+            st[20] = a04;
+            st[21] = a14;
+            st[22] = a24;
+            st[23] = a34;
+            st[24] = a44;
         }
 
         /// <summary>
@@ -402,10 +406,14 @@ namespace Evo.Services.Cryptography
             return output;
         }
 
-        
 
 
-        // compute a keccak hash (md) of given byte length from "in"
+
+        /// <summary>
+        /// Computes a Keccak 256 bit hash.
+        /// </summary>
+        /// <param name="input">A contiguous region of arbitrary memory with the bytes to hash.</param>
+        /// <param name="output">A contiguous region of arbitrary memory that will be updated with the computed hash.</param>
         public void ComputeHash(Span<byte> input, Span<byte> output)
         {
             if (output.Length <= 0 || output.Length > State_Size_B_InBytes)
@@ -503,7 +511,7 @@ namespace Evo.Services.Cryptography
             // If our provided state is empty, initialize a new one
             if (keccak.State.Length == 0)
             {
-                keccak.State = new ulong[Keccak256Service.State_Size_B_InBytes / 8];
+                keccak.State = new ulong[Keccak256HashService.State_Size_B_InBytes / 8];
             }
 
             // If our remainder is non zero.
