@@ -202,15 +202,6 @@ namespace Evo.Services.Cryptography.Keccak
             ulong b01, b11, b21, b31, b41;
             ulong b00, b10, b20, b30, b40;
 
-            ulong e04, e14, e24, e34, e44;
-            ulong e03, e13, e23, e33, e43;
-            ulong e02, e12, e22, e32, e42;
-            ulong e01, e11, e21, e31, e41;
-            ulong e00, e10, e20, e30, e40;
-
-            ulong G0, G1, G2, G3, G4;
-            ulong H0, H1, H2, H3, H4;
-
             // Map the single dimensional array of 25 words into individual variables for speed reasons.
             a00 = A[0];
             a10 = A[1];
@@ -238,32 +229,7 @@ namespace Evo.Services.Cryptography.Keccak
             a34 = A[23];
             a44 = A[24];
 
-            //copyFromState(A, state)
-            e00 = A[0];
-            e10 = A[1];
-            e20 = A[2];
-            e30 = A[3];
-            e40 = A[4];
-            e01 = A[5];
-            e11 = A[6];
-            e21 = A[7];
-            e31 = A[8];
-            e41 = A[9];
-            e02 = A[10];
-            e12 = A[11];
-            e22 = A[12];
-            e32 = A[13];
-            e42 = A[14];
-            e03 = A[15];
-            e13 = A[16];
-            e23 = A[17];
-            e33 = A[18];
-            e43 = A[19];
-            e04 = A[20];
-            e14 = A[21];
-            e24 = A[22];
-            e34 = A[23];
-            e44 = A[24];
+          
 
             for (int round = 0; round < 24; round += 1)
             {
@@ -343,18 +309,6 @@ namespace Evo.Services.Cryptography.Keccak
 
                 C4 = a40 ^ a41 ^ a42 ^ a43 ^ a44;
 
-                G0 = e00 ^ e01 ^ e02 ^ e03 ^ e04;
-                G1 = e10 ^ e11 ^ e12 ^ e13 ^ e14;
-                G2 = e20 ^ e21 ^ e22 ^ e23 ^ e24;
-                G3 = e30 ^ e31 ^ e32 ^ e33 ^ e34;
-                G4 = e40 ^ e41 ^ e42 ^ e43 ^ e44;
-
-                //Assert.AreEqual(C0, G0);
-                //Assert.AreEqual(C1, G1);
-                //Assert.AreEqual(C2, G2);
-                //Assert.AreEqual(C3, G3);
-                //Assert.AreEqual(C4, G4);
-
                 // θ - step b.0-4:  D[x]    = C[x−1]  ⊕ rot(C[x + 1], 1)                      for x =    0,1,2,3,4
                 //
                 //    Explanation:   Take the virtual lane C[x] and xor it with the same virtual lane rotated by a single bit
@@ -365,21 +319,6 @@ namespace Evo.Services.Cryptography.Keccak
                 D2 = C1 ^ RotateLaneByXBits(C3, 1, laneWidth_W); // C[x-1] ^ RotateLaneByXBits(C[x + 1], 1, LaneWidth_W), x = 2 
                 D3 = C2 ^ RotateLaneByXBits(C4, 1, laneWidth_W); // C[x-1] ^ RotateLaneByXBits(C[x + 1], 1, LaneWidth_W), x = 3 
                 D4 = C3 ^ RotateLaneByXBits(C0, 1, laneWidth_W); // C[x-1] ^ RotateLaneByXBits(C[x + 1], 1, LaneWidth_W), x = 4 (remember it wraps)
-
-                
-
-                //thetaRhoPiChiIotaPrepareTheta(round  , A, E)
-                H0 = G4 ^ ROL(G1, 1);
-                H1 = G0 ^ ROL(G2, 1);
-                H2 = G1 ^ ROL(G3, 1);
-                H3 = G2 ^ ROL(G4, 1);
-                H4 = G3 ^ ROL(G0, 1);
-
-                //Assert.AreEqual(D0, H0);
-                //Assert.AreEqual(D1, H1);
-                //Assert.AreEqual(D2, H2);
-                //Assert.AreEqual(D3, H3);
-                //Assert.AreEqual(D4, H4);
 
                 // θ - step c:  A[x, y] = A[x, y] ⊕ D[x]                                  for x, y = 0,1,2,3,4
                 //    Explanation:   Take the virtual lane D[x] and xor it with each veritical stack of lanes
@@ -523,22 +462,7 @@ namespace Evo.Services.Cryptography.Keccak
             return lane << offset % laneWBits ^ lane >> laneWBits - offset % laneWBits;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ulong ROL(ulong a, int offset)
-        {
-            return a << offset % LANE_BITS ^ a >> LANE_BITS - offset % LANE_BITS;
-        }
-
-        static class Assert
-        {
-            public static void AreEqual(ulong a, ulong b)
-            {
-                if (a != b)
-                {
-                    throw new Exception("");
-                }
-            }
-        }
+       
 
     }
 

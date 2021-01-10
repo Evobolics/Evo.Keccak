@@ -4,6 +4,6 @@ namespace Evo.Statics
 {
     public class KeccakRoot
     {
-        public static Keccak256Service Keccak256 { get; set; } = new Keccak256Service();
+        public static Keccak256HashService Keccak256 { get; set; } = new Keccak256HashService();
     }
 }

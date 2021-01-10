@@ -17,4 +17,7 @@
     <PackageReference Include="Evo.Strings" Version="21.0.102.4" />
     
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\Cryptography\Keccak\Hashing\" />
+  </ItemGroup>
 </Project>
