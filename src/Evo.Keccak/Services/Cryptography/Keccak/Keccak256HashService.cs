@@ -1,6 +1,6 @@
-﻿using Evo.Keccak;
-using Evo.Models.Cryptography;
+﻿using Evo.Models.Cryptography;
 using Evo.Statics;
+using Evo.Utilities;
 using System;
 using System.Buffers;
 using System.Diagnostics;
@@ -386,7 +386,7 @@ namespace Evo.Services.Cryptography
         /// <returns></returns>
         public byte[] FromHex(string hexString)
         {
-            var input = HexUtil.HexToBytes(hexString);
+            var input = HexUtility.HexToBytes(hexString);
             var output = new byte[32];
             ComputeHash(input, output);
             return output;

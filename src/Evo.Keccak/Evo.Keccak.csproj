@@ -13,7 +13,7 @@
     <PackageReleaseNotes>The package's code was written by Evobolics Digital, LLC, which was orginally forked from the Meadow under the MIT license.  Additional notes about the algorithms implementation is located within the source files.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Evo.Hexadecimals" Version="21.0.102.2" />
+    <PackageReference Include="Evo.Hexadecimals" Version="21.0.110.1" />
     <PackageReference Include="Evo.Strings" Version="21.0.102.4" />
     
   </ItemGroup>
