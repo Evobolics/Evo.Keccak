@@ -95,11 +95,11 @@ namespace Evo.Services.Cryptography
             ulong C0, C1, C2, C3, C4;
             ulong D0, D1, D2, D3, D4;
 
-            ulong e04, e14, e24, e34, e44;
-            ulong e03, eme, emi, emo, emu;
-            ulong e02, eke, eki, eko, eku;
-            ulong e01, ege, egi, ego, egu;
-            ulong e00, e10, e20, e30, e40;
+            ulong b04, b14, b24, b34, b44;
+            ulong b03, b13, b23, b33, b43;
+            ulong b02, b12, b22, b32, b42;
+            ulong b01, b11, b21, b31, b41;
+            ulong b00, b10, b20, b30, b40;
 
             //copyFromState(A, state)
             a00 = st[0];
@@ -155,12 +155,12 @@ namespace Evo.Services.Cryptography
                 a44 ^= D4;
                 C4 = ROL(a44, 14);
 
-                e00 = C0 ^ ~C1 & C2;
-                e00 ^= RoundConstants[round];
-                e10 = C1 ^ ~C2 & C3;
-                e20 = C2 ^ ~C3 & C4;
-                e30 = C3 ^ ~C4 & C0;
-                e40 = C4 ^ ~C0 & C1;
+                b00 = C0 ^ ~C1 & C2;
+                b00 ^= RoundConstants[round];
+                b10 = C1 ^ ~C2 & C3;
+                b20 = C2 ^ ~C3 & C4;
+                b30 = C3 ^ ~C4 & C0;
+                b40 = C4 ^ ~C0 & C1;
 
                 a30 ^= D3;
                 C0 = ROL(a30, 28);
@@ -172,11 +172,11 @@ namespace Evo.Services.Cryptography
                 C3 = ROL(a13, 45);
                 a24 ^= D2;
                 C4 = ROL(a24, 61);
-                e01 = C0 ^ ~C1 & C2;
-                ege = C1 ^ ~C2 & C3;
-                egi = C2 ^ ~C3 & C4;
-                ego = C3 ^ ~C4 & C0;
-                egu = C4 ^ ~C0 & C1;
+                b01 = C0 ^ ~C1 & C2;
+                b11 = C1 ^ ~C2 & C3;
+                b21 = C2 ^ ~C3 & C4;
+                b31 = C3 ^ ~C4 & C0;
+                b41 = C4 ^ ~C0 & C1;
 
                 a10 ^= D1;
                 C0 = ROL(a10, 1);
@@ -188,11 +188,11 @@ namespace Evo.Services.Cryptography
                 C3 = ROL(a43, 8);
                 a04 ^= D0;
                 C4 = ROL(a04, 18);
-                e02 = C0 ^ ~C1 & C2;
-                eke = C1 ^ ~C2 & C3;
-                eki = C2 ^ ~C3 & C4;
-                eko = C3 ^ ~C4 & C0;
-                eku = C4 ^ ~C0 & C1;
+                b02 = C0 ^ ~C1 & C2;
+                b12 = C1 ^ ~C2 & C3;
+                b22 = C2 ^ ~C3 & C4;
+                b32 = C3 ^ ~C4 & C0;
+                b42 = C4 ^ ~C0 & C1;
 
                 a40 ^= D4;
                 C0 = ROL(a40, 27);
@@ -205,11 +205,11 @@ namespace Evo.Services.Cryptography
                 a34 ^= D3;
                 C4 = ROL(a34, 56);
 
-                e03 = C0 ^ ~C1 & C2;
-                eme = C1 ^ ~C2 & C3;
-                emi = C2 ^ ~C3 & C4;
-                emo = C3 ^ ~C4 & C0;
-                emu = C4 ^ ~C0 & C1;
+                b03 = C0 ^ ~C1 & C2;
+                b13 = C1 ^ ~C2 & C3;
+                b23 = C2 ^ ~C3 & C4;
+                b33 = C3 ^ ~C4 & C0;
+                b43 = C4 ^ ~C0 & C1;
 
                 a20 ^= D2;
                 C0 = ROL(a20, 62);
@@ -221,18 +221,18 @@ namespace Evo.Services.Cryptography
                 C3 = ROL(a03, 41);
                 a14 ^= D1;
                 C4 = ROL(a14, 2);
-                e04 = C0 ^ ~C1 & C2;
-                e14 = C1 ^ ~C2 & C3;
-                e24 = C2 ^ ~C3 & C4;
-                e34 = C3 ^ ~C4 & C0;
-                e44 = C4 ^ ~C0 & C1;
+                b04 = C0 ^ ~C1 & C2;
+                b14 = C1 ^ ~C2 & C3;
+                b24 = C2 ^ ~C3 & C4;
+                b34 = C3 ^ ~C4 & C0;
+                b44 = C4 ^ ~C0 & C1;
 
                 //    prepareTheta
-                C0 = e00 ^ e01 ^ e02 ^ e03 ^ e04;
-                C1 = e10 ^ ege ^ eke ^ eme ^ e14;
-                C2 = e20 ^ egi ^ eki ^ emi ^ e24;
-                C3 = e30 ^ ego ^ eko ^ emo ^ e34;
-                C4 = e40 ^ egu ^ eku ^ emu ^ e44;
+                C0 = b00 ^ b01 ^ b02 ^ b03 ^ b04;
+                C1 = b10 ^ b11 ^ b12 ^ b13 ^ b14;
+                C2 = b20 ^ b21 ^ b22 ^ b23 ^ b24;
+                C3 = b30 ^ b31 ^ b32 ^ b33 ^ b34;
+                C4 = b40 ^ b41 ^ b42 ^ b43 ^ b44;
 
                 //thetaRhoPiChiIotaPrepareTheta(round+1, E, A)
                 D0 = C4 ^ ROL(C1, 1);
@@ -241,16 +241,16 @@ namespace Evo.Services.Cryptography
                 D3 = C2 ^ ROL(C4, 1);
                 D4 = C3 ^ ROL(C0, 1);
 
-                e00 ^= D0;
-                C0 = e00;
-                ege ^= D1;
-                C1 = ROL(ege, 44);
-                eki ^= D2;
-                C2 = ROL(eki, 43);
-                emo ^= D3;
-                C3 = ROL(emo, 21);
-                e44 ^= D4;
-                C4 = ROL(e44, 14);
+                b00 ^= D0;
+                C0 = b00;
+                b11 ^= D1;
+                C1 = ROL(b11, 44);
+                b22 ^= D2;
+                C2 = ROL(b22, 43);
+                b33 ^= D3;
+                C3 = ROL(b33, 21);
+                b44 ^= D4;
+                C4 = ROL(b44, 14);
                 a00 = C0 ^ ~C1 & C2;
                 a00 ^= RoundConstants[round + 1];
                 a10 = C1 ^ ~C2 & C3;
@@ -258,64 +258,64 @@ namespace Evo.Services.Cryptography
                 a30 = C3 ^ ~C4 & C0;
                 a40 = C4 ^ ~C0 & C1;
 
-                e30 ^= D3;
-                C0 = ROL(e30, 28);
-                egu ^= D4;
-                C1 = ROL(egu, 20);
-                e02 ^= D0;
-                C2 = ROL(e02, 3);
-                eme ^= D1;
-                C3 = ROL(eme, 45);
-                e24 ^= D2;
-                C4 = ROL(e24, 61);
+                b30 ^= D3;
+                C0 = ROL(b30, 28);
+                b41 ^= D4;
+                C1 = ROL(b41, 20);
+                b02 ^= D0;
+                C2 = ROL(b02, 3);
+                b13 ^= D1;
+                C3 = ROL(b13, 45);
+                b24 ^= D2;
+                C4 = ROL(b24, 61);
                 a01 = C0 ^ ~C1 & C2;
                 a11 = C1 ^ ~C2 & C3;
                 a21 = C2 ^ ~C3 & C4;
                 a31 = C3 ^ ~C4 & C0;
                 a41 = C4 ^ ~C0 & C1;
 
-                e10 ^= D1;
-                C0 = ROL(e10, 1);
-                egi ^= D2;
-                C1 = ROL(egi, 6);
-                eko ^= D3;
-                C2 = ROL(eko, 25);
-                emu ^= D4;
-                C3 = ROL(emu, 8);
-                e04 ^= D0;
-                C4 = ROL(e04, 18);
+                b10 ^= D1;
+                C0 = ROL(b10, 1);
+                b21 ^= D2;
+                C1 = ROL(b21, 6);
+                b32 ^= D3;
+                C2 = ROL(b32, 25);
+                b43 ^= D4;
+                C3 = ROL(b43, 8);
+                b04 ^= D0;
+                C4 = ROL(b04, 18);
                 a02 = C0 ^ ~C1 & C2;
                 a12 = C1 ^ ~C2 & C3;
                 a22 = C2 ^ ~C3 & C4;
                 a32 = C3 ^ ~C4 & C0;
                 a42 = C4 ^ ~C0 & C1;
 
-                e40 ^= D4;
-                C0 = ROL(e40, 27);
-                e01 ^= D0;
-                C1 = ROL(e01, 36);
-                eke ^= D1;
-                C2 = ROL(eke, 10);
-                emi ^= D2;
-                C3 = ROL(emi, 15);
-                e34 ^= D3;
-                C4 = ROL(e34, 56);
+                b40 ^= D4;
+                C0 = ROL(b40, 27);
+                b01 ^= D0;
+                C1 = ROL(b01, 36);
+                b12 ^= D1;
+                C2 = ROL(b12, 10);
+                b23 ^= D2;
+                C3 = ROL(b23, 15);
+                b34 ^= D3;
+                C4 = ROL(b34, 56);
                 a03 = C0 ^ ~C1 & C2;
                 a13 = C1 ^ ~C2 & C3;
                 a23 = C2 ^ ~C3 & C4;
                 a33 = C3 ^ ~C4 & C0;
                 a43 = C4 ^ ~C0 & C1;
 
-                e20 ^= D2;
-                C0 = ROL(e20, 62);
-                ego ^= D3;
-                C1 = ROL(ego, 55);
-                eku ^= D4;
-                C2 = ROL(eku, 39);
-                e03 ^= D0;
-                C3 = ROL(e03, 41);
-                e14 ^= D1;
-                C4 = ROL(e14, 2);
+                b20 ^= D2;
+                C0 = ROL(b20, 62);
+                b31 ^= D3;
+                C1 = ROL(b31, 55);
+                b42 ^= D4;
+                C2 = ROL(b42, 39);
+                b03 ^= D0;
+                C3 = ROL(b03, 41);
+                b14 ^= D1;
+                C4 = ROL(b14, 2);
                 a04 = C0 ^ ~C1 & C2;
                 a14 = C1 ^ ~C2 & C3;
                 a24 = C2 ^ ~C3 & C4;
@@ -416,21 +416,29 @@ namespace Evo.Services.Cryptography
         /// <param name="output">A contiguous region of arbitrary memory that will be updated with the computed hash.</param>
         public void ComputeHash(Span<byte> input, Span<byte> output)
         {
-            if (output.Length <= 0 || output.Length > State_Size_B_InBytes)
+            if (output.Length <= 0)
             {
-                throw new ArgumentException("Bad keccak use");
+                throw new ArgumentException("The length of the output buffer is less than or equal to zero.");
             }
 
-            byte[] stateArray = _arrayPool.Rent(State_Size_B_InBytes);
-            byte[] tempArray = _arrayPool.Rent(TEMP_BUFF_SIZE);
+            if (output.Length > State_Size_B_InBytes)
+            {
+                throw new ArgumentException("The output buffer is greater than the state B in bytes.");
+            }
+
+            byte[] stateArray = null;
+            byte[] tempArray = null;
 
             try
             {
-                Span<ulong> state = MemoryMarshal.Cast<byte, ulong>(stateArray.AsSpan(0, State_Size_B_InBytes));
-                Span<byte> temp = tempArray.AsSpan(0, TEMP_BUFF_SIZE);
+                stateArray = _arrayPool.Rent(State_Size_B_InBytes); // 200 bytes, or 1600 bits
+                tempArray = _arrayPool.Rent(TEMP_BUFF_SIZE);
 
-                state.Clear();
-                temp.Clear();
+                var stateSpan = MemoryMarshal.Cast<byte, ulong>(stateArray.AsSpan(0, State_Size_B_InBytes));
+                var tempSpan = tempArray.AsSpan(0, TEMP_BUFF_SIZE);
+
+                stateSpan.Clear();
+                tempSpan.Clear();
 
                 int roundSize = State_Size_B_InBytes == output.Length ? HASH_DATA_AREA : State_Size_B_InBytes - 2 * output.Length;
                 int roundSizeU64 = roundSize / 8;
@@ -443,10 +451,10 @@ namespace Evo.Services.Cryptography
 
                     for (i = 0; i < roundSizeU64; i++)
                     {
-                        state[i] ^= input64[i];
+                        stateSpan[i] ^= input64[i];
                     }
 
-                    KeccakF(state, ROUNDS);
+                    KeccakF(stateSpan, ROUNDS);
                 }
 
                 // last block and padding
@@ -455,24 +463,31 @@ namespace Evo.Services.Cryptography
                     throw new ArgumentException("Bad keccak use");
                 }
 
-                input.Slice(0, inputLength).CopyTo(temp);
-                temp[inputLength++] = 1;
-                temp[roundSize - 1] |= 0x80;
+                input.Slice(0, inputLength).CopyTo(tempSpan);
+                tempSpan[inputLength++] = 1;
+                tempSpan[roundSize - 1] |= 0x80;
 
-                var tempU64 = MemoryMarshal.Cast<byte, ulong>(temp);
+                var tempU64 = MemoryMarshal.Cast<byte, ulong>(tempSpan);
 
                 for (i = 0; i < roundSizeU64; i++)
                 {
-                    state[i] ^= tempU64[i];
+                    stateSpan[i] ^= tempU64[i];
                 }
 
-                KeccakF(state, ROUNDS);
-                MemoryMarshal.AsBytes(state).Slice(0, output.Length).CopyTo(output);
+                KeccakF(stateSpan, ROUNDS);
+                MemoryMarshal.AsBytes(stateSpan).Slice(0, output.Length).CopyTo(output);
             }
             finally
             {
-                _arrayPool.Return(stateArray);
-                _arrayPool.Return(tempArray);
+                if (stateArray != null)
+                {
+                    _arrayPool.Return(stateArray);
+                }
+
+                if (tempArray != null)
+                {
+                    _arrayPool.Return(tempArray);
+                }
             }
         }
 
