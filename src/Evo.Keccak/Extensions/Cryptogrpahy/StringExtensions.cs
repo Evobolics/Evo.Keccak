@@ -9,7 +9,7 @@ namespace System
 {
     public static class StringExtensions
     {
-        public static byte[] Keccak256(this string input)
+        public static byte[] HashToKeccak256(this string input)
         {
             return KeccakRoot.Keccak256.FromString(input);
         }
