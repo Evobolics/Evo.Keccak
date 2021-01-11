@@ -91,6 +91,22 @@ namespace Evo.Keccak.Tests
             }
         }
 
+        [Theory]
+        [InlineData("4d741b6f1eb29cb2a9b9911c82f56fa8d73b04959d3d9d222895df6c0b28aa15", "The quick brown fox jumps over the lazy dog", true)]
+        public void KeccakFromString(string expected, string input, bool shouldMatch)
+        {
+            var result = input.Keccak256().ToHexString(hexPrefix: false);
+
+            if (shouldMatch)
+            {
+                Assert.Equal(expected, result);
+            }
+            else
+            {
+                Assert.NotEqual(expected, result);
+            }
+        }
+
         [Fact]
         public void TestKeccakUpdate()
         {
