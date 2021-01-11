@@ -6,7 +6,18 @@ The [package](https://www.nuget.org/packages/Evo.Keccak/) is located on [nuget.o
 This code was originally forked from the [Meadow](https://github.com/MeadowSuite/Meadow/) under the MIT license.  
 # Usage
 
+Install [ Package Evo.Keccak](https://www.nuget.org/packages/Evo.Keccak/)
 
+```csharp
+
+using System;
+
+// ...
+string input = "Gig'em";
+
+var result = input.HashToKeccak256().ToHexString(hexPrefix: false);
+
+```
 
 
 # Notes
