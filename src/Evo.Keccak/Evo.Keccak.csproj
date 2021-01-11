@@ -10,11 +10,13 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Evobolics/Evo.Keccak</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Please see the github repository for usage information and for many usful Keccak literature links.  Additional notes about the algorithms implementation are located within the source files.  
+    <PackageReleaseNotes>
+Please see the github repository for usage information and for many useful Keccak literature links.  
+
+Additional notes about the algorithms implementation are located within the source files.  Less performant teaching implementations, with comments, are included.  Developers are encouraged to examine them in the source code when learning the Keccak algorithm.  
     
-    Less performant teaching implementations, with comments, are included and developers are encouraged to examine them in the source code when learning the Keccak algorithm.  
-    
-    The package's code was written by Evobolics Digital, LLC, which was orginally forked from the Meadow under the MIT license.  </PackageReleaseNotes>
+The package's code was written by Evobolics Digital, LLC, which was orginally forked from the Meadow under the MIT license.  
+    </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Evo.Hexadecimals" Version="21.0.110.1" />
