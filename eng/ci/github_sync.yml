@@ -1,5 +1,10 @@
+
 steps:
 - bash: |
+    git merge --no-commit https://$(GITHUB_PAT)@github.com/Evobolics/Evo.Keccak HEAD:main
+    git rm . -rf
+    git checkout HEAD -- .
+    git commit
     git push --force https://$(GITHUB_PAT)@github.com/Evobolics/Evo.Keccak HEAD:main
         
   displayName: 'Copy to Github'
