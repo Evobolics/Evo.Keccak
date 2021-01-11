@@ -95,7 +95,43 @@ namespace Evo.Keccak.Tests
         [InlineData("4d741b6f1eb29cb2a9b9911c82f56fa8d73b04959d3d9d222895df6c0b28aa15", "The quick brown fox jumps over the lazy dog", true)]
         public void KeccakFromString(string expected, string input, bool shouldMatch)
         {
-            var result = input.HashToKeccak256().ToHexString(hexPrefix: false);
+            var result = input.HashToKeccak256Bytes().ToHexString(hexPrefix: false);
+
+            if (shouldMatch)
+            {
+                Assert.Equal(expected, result);
+            }
+            else
+            {
+                Assert.NotEqual(expected, result);
+            }
+        }
+
+        [Theory]
+        [InlineData("4d741b6f1eb29cb2a9b9911c82f56fa8d73b04959d3d9d222895df6c0b28aa15", "The quick brown fox jumps over the lazy dog", true)]
+        public void TestHashToKeccak256Bytes(string expected, string input, bool shouldMatch)
+        {
+            var bytes = input.GetUtf8Bytes();
+
+            var result = bytes.HashToKeccak256Bytes().ToHexString();
+
+            if (shouldMatch)
+            {
+                Assert.Equal(expected, result);
+            }
+            else
+            {
+                Assert.NotEqual(expected, result);
+            }
+        }
+
+        [Theory]
+        [InlineData("4d741b6f1eb29cb2a9b9911c82f56fa8d73b04959d3d9d222895df6c0b28aa15", "The quick brown fox jumps over the lazy dog", true)]
+        public void TestHashToKeccak256Span(string expected, string input, bool shouldMatch)
+        {
+            var bytes = input.GetUtf8Bytes();
+
+            var result = bytes.HashToKeccak256Span().ToHexString();
 
             if (shouldMatch)
             {

@@ -12,10 +12,16 @@ Install [ Package Evo.Keccak](https://www.nuget.org/packages/Evo.Keccak/)
 
 using System;
 
-// ...
+// Example 1
 string input = "Gig'em";
 
 var result = input.HashToKeccak256().ToHexString(hexPrefix: false);
+
+// Example 2
+
+var bytes = input.GetUtf8Bytes();
+
+var result = bytes.HashToKeccak256Bytes();
 
 ```
 
